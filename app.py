@@ -63,27 +63,43 @@ def jalankan_simulasi(rate_pernah, rate_tidak, rate_baru):
             "sim_tidak": sim_tidak[i]
         })
 
-    # Grafik
-    fig, ax = plt.subplots()
-    ax.plot(pivot.index, pivot["Pernah"], marker="o", label="Data Asli - Pernah")
-    ax.plot(pivot.index, pivot["Tidak"], marker="o", label="Data Asli - Tidak")
-    ax.plot(sim_periode, sim_pernah, linestyle="--", label="Simulasi - Pernah")
-    ax.plot(sim_periode, sim_tidak, linestyle="--", label="Simulasi - Tidak")
-
+    # Grafik Data Asli
+    fig1, ax1 = plt.subplots(figsize=(8, 5))
+    ax1.plot(pivot.index, pivot["Pernah"], marker="o", label="Pernah Bekerja", color="#1976d2", linewidth=2)
+    ax1.plot(pivot.index, pivot["Tidak"], marker="s", label="Tidak Pernah Bekerja", color="#d32f2f", linewidth=2)
     plt.xticks(rotation=45)
-    ax.set_xlabel("Periode")
-    ax.set_ylabel("Jumlah Penganggur")
-    ax.set_title("Simulasi Pengangguran Berdasarkan Pengalaman Kerja")
-    ax.legend()
+    ax1.set_xlabel("Periode")
+    ax1.set_ylabel("Jumlah Penganggur")
+    ax1.set_title("Data Asli Pengangguran")
+    ax1.legend()
+    ax1.grid(True, alpha=0.3)
     plt.tight_layout()
 
-    buf = BytesIO()
-    fig.savefig(buf, format="png")
-    buf.seek(0)
-    img_base64 = base64.b64encode(buf.read()).decode("utf-8")
-    plt.close(fig)
+    buf1 = BytesIO()
+    fig1.savefig(buf1, format="png")
+    buf1.seek(0)
+    img_base64_asli = base64.b64encode(buf1.read()).decode("utf-8")
+    plt.close(fig1)
 
-    return img_base64, tabel_data
+    # Grafik Simulasi
+    fig2, ax2 = plt.subplots(figsize=(8, 5))
+    ax2.plot(sim_periode, sim_pernah, linestyle="--", marker="o", label="Simulasi - Pernah", color="#1976d2", linewidth=2)
+    ax2.plot(sim_periode, sim_tidak, linestyle="--", marker="s", label="Simulasi - Tidak", color="#d32f2f", linewidth=2)
+    plt.xticks(rotation=45)
+    ax2.set_xlabel("Periode")
+    ax2.set_ylabel("Jumlah Penganggur")
+    ax2.set_title("Data Simulasi Pengangguran")
+    ax2.legend()
+    ax2.grid(True, alpha=0.3)
+    plt.tight_layout()
+
+    buf2 = BytesIO()
+    fig2.savefig(buf2, format="png")
+    buf2.seek(0)
+    img_base64_sim = base64.b64encode(buf2.read()).decode("utf-8")
+    plt.close(fig2)
+
+    return img_base64_asli, img_base64_sim, tabel_data
 
 
 
@@ -94,11 +110,12 @@ def index():
         rate_tidak = float(request.form["rate_tidak"])
         rate_baru = float(request.form["rate_baru"])
 
-        plot, table = jalankan_simulasi(rate_pernah, rate_tidak, rate_baru)
+        plot_asli, plot_sim, table = jalankan_simulasi(rate_pernah, rate_tidak, rate_baru)
 
         return render_template(
             "index.html",
-            plot_url=plot,
+            plot_url_asli=plot_asli,
+            plot_url_sim=plot_sim,
             tabel=table,
             rate_pernah=rate_pernah,
             rate_tidak=rate_tidak,
@@ -107,7 +124,8 @@ def index():
 
     return render_template(
         "index.html",
-        plot_url=None,
+        plot_url_asli=None,
+        plot_url_sim=None,
         tabel=None,
         rate_pernah=0.10,
         rate_tidak=0.05,
