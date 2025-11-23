@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Simulasi Pengangguran</title>
+</head>
+
+<body style="font-family: Arial, sans-serif; max-width: 1000px; margin: auto; padding: 20px;
+             background: linear-gradient(to bottom right, #eef6ff, #ffffff);">
+
+    <h1 style="text-align: center; margin-bottom: 30px; color: #1a73e8;">
+        Simulasi Pengangguran Berdasarkan Pengalaman Kerja
+    </h1>
+
+    <!-- FORM -->
+    <div style="
+        border: 2px solid #1a73e8; 
+        padding: 20px; 
+        border-radius: 10px; 
+        background-color: #f3f8ff;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        margin-bottom: 25px;">
+
+        <h2 style="margin-top: 0; color: #0d47a1;">
+            Parameter Simulasi
+        </h2>
+
+        <form method="POST" style="font-size: 16px;">
+
+            <label><b>Rate Dapat Kerja (Pernah Bekerja):</b></label><br>
+            <input type="number" step="0.01" name="rate_pernah" 
+                   value="{{ rate_pernah }}"
+                   style="width: 100%; padding: 8px; margin: 8px 0; border-radius: 6px; border: 1px solid #90caf9;"><br>
+
+            <label><b>Rate Dapat Kerja (Tidak Pernah Bekerja):</b></label><br>
+            <input type="number" step="0.01" name="rate_tidak" 
+                   value="{{ rate_tidak }}"
+                   style="width: 100%; padding: 8px; margin: 8px 0; border-radius: 6px; border: 1px solid #90caf9;"><br>
+
+            <label><b>Rate Pendatang Baru:</b></label><br>
+            <input type="number" step="0.01" name="rate_baru" 
+                   value="{{ rate_baru }}"
+                   style="width: 100%; padding: 8px; margin: 8px 0; border-radius: 6px; border: 1px solid #90caf9;"><br>
+
+            <button type="submit" 
+                style="
+                    padding: 12px 30px; 
+                    background-color: #1a73e8; 
+                    color: white; 
+                    border: none; 
+                    border-radius: 8px; 
+                    cursor: pointer;
+                    font-size: 17px;
+                    margin-top: 10px;
+                    box-shadow: 0 3px 6px rgba(0,0,0,0.2);">
+                🚀 Run Simulasi
+            </button>
+        </form>
+    </div>
+
+    <hr style="margin: 30px 0; border: 1px solid #90caf9;">
+
+    {% if plot_url %}
+        <h2 style="text-align: center; color: #0d47a1;">Grafik Simulasi</h2>
+
+        <div style="text-align: center; margin-bottom: 30px;">
+            <img src="data:image/png;base64,{{ plot_url }}" alt="Grafik Simulasi"
+                style="max-width: 100%; border: 2px solid #90caf9;
+                padding: 10px; border-radius: 10px;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+        </div>
+
+        <h2 style="text-align: center; color: #0d47a1;">Tabel Data Asli vs Simulasi</h2>
+
+        <!-- SCROLL CONTAINER -->
+        <div style="overflow-x: auto; margin-top: 20px;">
+
+            <table 
+                style="
+                    width: 100%; 
+                    border-collapse: collapse; 
+                    font-size: 15px;">
+
+                <tr style="background-color: #bbdefb;">
+                    <th style="border: 1px solid #64b5f6; padding: 10px;">Periode</th>
+                    <th style="border: 1px solid #64b5f6; padding: 10px;">Data Asli - Pernah</th>
+                    <th style="border: 1px solid #64b5f6; padding: 10px;">Data Asli - Tidak</th>
+                    <th style="border: 1px solid #64b5f6; padding: 10px;">Simulasi - Pernah</th>
+                    <th style="border: 1px solid #64b5f6; padding: 10px;">Simulasi - Tidak</th>
+                </tr>
+
+                {% for row in tabel %}
+                <tr {% if loop.index % 2 == 0 %}style="background-color: #e3f2fd;"{% else %}style="background-color: #ffffff;"{% endif %}>
+                    <td style="border: 1px solid #bbdefb; padding: 8px;">{{ row.periode }}</td>
+                    <td style="border: 1px solid #bbdefb; padding: 8px;">{{ row.asli_pernah }}</td>
+                    <td style="border: 1px solid #bbdefb; padding: 8px;">{{ row.asli_tidak }}</td>
+                    <td style="border: 1px solid #bbdefb; padding: 8px;">{{ row.sim_pernah }}</td>
+                    <td style="border: 1px solid #bbdefb; padding: 8px;">{{ row.sim_tidak }}</td>
+                </tr>
+                {% endfor %}
+
+            </table>
+        </div>
+    {% endif %}
+
+</body>
+</html>
